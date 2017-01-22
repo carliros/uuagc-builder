@@ -1,13 +1,4 @@
-module UUAGC.Builder
- ( readPackageDescription
- , build
- , listField
- , listField_
- , field
- , field_
- , readField
- , defaultUuagcHook
- ) where
+module UUAGC.Builder ( defaultUuagcHook) where
 
 import Control.Monad
 import Data.List.Split
@@ -27,6 +18,8 @@ import qualified Distribution.Verbosity                as Verbosity
 
 import UU.UUAGC (uuagc)
 
+import UUAGC.ParserOptions(parseFileOptions)
+
 -- | Default parsing of a Cabal file.
 readPackageDescription :: FilePath -> IO PackageDescription
 readPackageDescription = PD.readPackageDescription Verbosity.silent >=> return . packageDescription
@@ -42,7 +35,6 @@ build packageDesc = do
     exists <- doesFileExist (fst fileOption)
     if exists
       then do
-        putStrLn $ show fileOption
         putStrLn $ "uuagc-builder: " ++ show i ++ " - building " ++ file ++ " " ++ show opts
         runUuagcBuilder fileOption
       else
@@ -55,41 +47,16 @@ runUuagcBuilder (filePath, opts)
           ExitSuccess        -> return ()
           ex@(ExitFailure _) -> throwIO ex
 
--- | Try to read a comma separated field
-listField :: String -> PackageDescription -> Maybe [String]
-listField key = fmap (map strip . splitOn ",") . field key
-
--- | Read the value of a comma separated field, gives an empty list if the field is not present.
-listField_ :: String -> PackageDescription -> [String]
-listField_ fn = fromMaybe [] . listField fn
-
 -- | Try to read file and options
 listFieldTuple_ :: String -> PackageDescription -> [(String, [String])]
 listFieldTuple_ fn = fromMaybe [] . listFieldTuple fn
 
 listFieldTuple :: String -> PackageDescription -> Maybe [(String, [String])]
-listFieldTuple key = fmap (map tupleOption . splitOn ",") . field key
-
-tupleOption :: String -> (String, [String])
-tupleOption str
-  = let resSplit = splitOn ":" str
-    in if null resSplit then ("", [])
-                        else let file = head resSplit
-                                 opts = head $ tail resSplit
-                             in (strip file, parseOptions opts)
-  where parseOptions = map strip . words
-
+listFieldTuple key = fmap parseFileOptions . field key
 
 -- | Try to read a field's value
 field :: String -> PackageDescription -> Maybe String
 field key = fmap strip . lookup key . customFieldsPD
-
--- | Force reading of a field, fails if it doesn't exist
-field_ :: String -> PackageDescription -> String
-field_ key = fromMaybe (error $ key ++ "is  missing") . field key
-
-readField :: Read a => String -> a -> PackageDescription -> a
-readField key d = fromMaybe d . (readMay <=< field key)
 
 -- | Default build hook for your Setup.hs
 defaultUuagcHook :: IO ()

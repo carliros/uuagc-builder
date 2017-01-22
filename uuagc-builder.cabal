@@ -1,0 +1,37 @@
+name:                uuagc-builder
+version:             0.1.0.0
+synopsis:            Execute UUAGC as preprocessor for ag files.
+description:         Execute UUAGC as preprocessor for ag files.
+license:             BSD3
+license-file:        LICENSE
+author:              Carlos Gómez
+bug-reports:         https://github.com/carliros/uuagc-builder/issues
+maintainer:          carliros.g@gmail.com
+copyright:           2017 Carlos Gómez
+category:            Development
+build-type:          Simple
+cabal-version:       >=1.10
+
+extra-source-files:
+  CHANGELOG.md
+  README.md
+
+source-repository head
+  type:              git
+  location:          https://github.com/carliros/uuagc-builder.git
+
+library
+  default-language:  Haskell2010
+  ghc-options:       -Wall
+  hs-source-dirs:    src
+  exposed-modules:   UUAGC.Builder
+  build-depends:
+      base >= 4.5 && < 4.10
+    , Cabal >= 1.4 && < 1.26
+    , data-default >= 0.5.3 && < 0.8
+    , directory >= 1.1 && < 1.4
+    , filepath >= 1.3 && < 1.5
+    , safe == 0.3.*
+    , split >= 0.2.2 && < 0.3
+    , text >= 0.11 && < 1.3
+    , uuagc >= 0.9.52.1

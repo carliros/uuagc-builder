@@ -1,0 +1,14 @@
+
+resolver: lts-7.16
+
+packages:
+- '.'
+
+extra-deps:
+- uuagc-0.9.52.1
+- uuagc-cabal-1.0.6.0
+- uulib-0.9.22
+
+flags: {}
+
+extra-package-dbs: []

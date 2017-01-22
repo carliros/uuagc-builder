@@ -1,7 +1,6 @@
 module UUAGC.Builder ( defaultUuagcHook) where
 
 import Control.Monad
-import Data.List.Split
 import Data.Maybe
 import System.Directory
 import qualified Data.Text as T
@@ -12,7 +11,6 @@ import Distribution.PackageDescription
 import Distribution.Simple
 import Distribution.Simple.LocalBuildInfo
 import Distribution.Simple.Setup
-import Safe
 import qualified Distribution.PackageDescription.Parse as PD (readPackageDescription)
 import qualified Distribution.Verbosity                as Verbosity
 

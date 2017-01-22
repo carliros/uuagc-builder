@@ -30,13 +30,13 @@ pUuagcOption = pUuagcSimpleOption <|> pUuagcCompleteOption
 
 pUuagcSimpleOption :: Parser String
 pUuagcSimpleOption
-  =   (\dash ch -> dash ++ (ch : [])) <$> pToken "-" <*> pLetter
-  <|> (\a b c d -> a ++ (b:[]) ++ c ++ d) <$> pToken "-" <*> pLetter <*> pSymbol "=" <*> pNoSeparator
+  = prepOptions <$> pToken "-" <*> pList1 pLetter <*> pMaybe ((++) <$> pSymbol "=" <*> pNoSeparator)
+  where prepOptions ss ll mExtra = ss ++ ll ++ maybe "" (id) mExtra
 
 pUuagcCompleteOption :: Parser String
 pUuagcCompleteOption
-  = (\dash ch -> dash ++ (ch : [])) <$> pToken "--" <*> pLetter
- <|> (\a b c d -> a ++ (b:[]) ++ c ++ d) <$> pToken "--" <*> pLetter <*> pSymbol "=" <*> pNoSeparator
+  = prepOptions <$> pToken "--" <*> pList1 pLetter <*> pMaybe ((++) <$> pSymbol "=" <*> pNoSeparator)
+  where prepOptions ss ll mExtra = ss ++ ll ++ maybe "" (id) mExtra
 
 pNoSeparator :: Parser String
 pNoSeparator = pMunch (not . isSeparator) <?> "uuagc extra option"

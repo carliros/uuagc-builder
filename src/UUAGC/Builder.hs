@@ -1,22 +1,22 @@
 module UUAGC.Builder ( defaultUuagcHook) where
 
-import Control.Monad
-import Data.Maybe
-import System.Directory
-import qualified Data.Text as T
-import System.Exit (ExitCode(..))
-import Control.Exception (throwIO)
+import           Control.Exception                     (throwIO)
+import           Control.Monad
+import           Data.Maybe
+import qualified Data.Text                             as T
+import           System.Directory
+import           System.Exit                           (ExitCode (..))
 
-import Distribution.PackageDescription
-import Distribution.Simple
-import Distribution.Simple.LocalBuildInfo
-import Distribution.Simple.Setup
+import           Distribution.PackageDescription
 import qualified Distribution.PackageDescription.Parse as PD (readPackageDescription)
+import           Distribution.Simple
+import           Distribution.Simple.LocalBuildInfo
+import           Distribution.Simple.Setup
 import qualified Distribution.Verbosity                as Verbosity
 
-import UU.UUAGC (uuagc)
+import           UU.UUAGC                              (uuagc)
 
-import UUAGC.ParserOptions(parseFileOptions)
+import           UUAGC.ParserOptions                   (parseFileOptions)
 
 -- | Default parsing of a Cabal file.
 readPackageDescription :: FilePath -> IO PackageDescription

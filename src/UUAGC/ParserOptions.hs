@@ -1,20 +1,22 @@
-{-# LANGUAGE  FlexibleInstances,
-              TypeSynonymInstances,
-              MultiParamTypeClasses,
-              Rank2Types, FlexibleContexts, NoMonomorphismRestriction
-                #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE MultiParamTypeClasses     #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE Rank2Types                #-}
+{-# LANGUAGE TypeSynonymInstances      #-}
 
 module UUAGC.ParserOptions (parseFileOptions) where
 
-import Data.Char
-import Text.ParserCombinators.UU
-import Text.ParserCombinators.UU.Utils
-import Text.ParserCombinators.UU.BasicInstances
+import           Data.Char
+import           Data.Maybe
+import           Text.ParserCombinators.UU
+import           Text.ParserCombinators.UU.BasicInstances
+import           Text.ParserCombinators.UU.Utils
 
 type OptionList = [String]
 
 parseFileOptions :: String -> [(FilePath, [String])]
-parseFileOptions inp = runParser "x-uuagc-file-option" pOptions inp
+parseFileOptions = runParser "x-uuagc-file-option" pOptions
 
 pOptions :: Parser [(FilePath, OptionList)]
 pOptions = pList1Sep pComma pOption
@@ -31,12 +33,12 @@ pUuagcOption = pUuagcSimpleOption <|> pUuagcCompleteOption
 pUuagcSimpleOption :: Parser String
 pUuagcSimpleOption
   = prepOptions <$> pToken "-" <*> pList1 pLetter <*> pMaybe ((++) <$> pSymbol "=" <*> pNoSeparator)
-  where prepOptions ss ll mExtra = ss ++ ll ++ maybe "" (id) mExtra
+  where prepOptions ss ll mExtra = ss ++ ll ++ fromMaybe "" mExtra
 
 pUuagcCompleteOption :: Parser String
 pUuagcCompleteOption
   = prepOptions <$> pToken "--" <*> pList1 pLetter <*> pMaybe ((++) <$> pSymbol "=" <*> pNoSeparator)
-  where prepOptions ss ll mExtra = ss ++ ll ++ maybe "" (id) mExtra
+  where prepOptions ss ll mExtra = ss ++ ll ++ fromMaybe "" mExtra
 
 pNoSeparator :: Parser String
 pNoSeparator = pMunch (not . isSeparator) <?> "uuagc extra option"

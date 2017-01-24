@@ -3,7 +3,6 @@ module UUAGC.Builder ( defaultUuagcHook) where
 import           Control.Exception                     (throwIO)
 import           Control.Monad
 import           Data.Maybe
-import qualified Data.Text                             as T
 import           System.Directory
 import           System.Exit                           (ExitCode (..))
 
@@ -25,7 +24,7 @@ readPackageDescription = PD.readPackageDescription Verbosity.silent >=> return .
 -- | Compile code
 build :: PackageDescription -> IO ()
 build packageDesc = do
-  let fileOptions  = listFieldTuple_ "x-uuagc-file-option"  packageDesc
+  let fileOptions  = listFieldTuple_ "x-uuagc-file-options"  packageDesc
 
   forM_ (zip fileOptions [(1::Int)..]) $ \(fileOption, i) -> do
     let file = fst fileOption
@@ -54,7 +53,7 @@ listFieldTuple key = fmap parseFileOptions . field key
 
 -- | Try to read a field's value
 field :: String -> PackageDescription -> Maybe String
-field key = fmap strip . lookup key . customFieldsPD
+field key = lookup key . customFieldsPD
 
 -- | Default build hook for your Setup.hs
 defaultUuagcHook :: IO ()
@@ -79,7 +78,3 @@ originalBuildHook = buildHook simpleUserHooks
 -- | File used to store de classes defined in the cabal file.
 agClassesFile :: String
 agClassesFile = "ag_file_options"
-
--- | Strip leading and trailing whitespace
-strip :: String -> String
-strip = T.unpack . T.strip . T.pack
